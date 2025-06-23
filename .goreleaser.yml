@@ -1,0 +1,58 @@
+# .goreleaser.yml
+
+# This is the project version. GoReleaser will automatically get it from the Git tag.
+version: 1
+
+# The 'before' hook runs commands before the build process starts.
+# Here, it runs 'go mod tidy' to ensure all dependencies are clean.
+before:
+  hooks:
+    - go mod tidy
+
+# The 'builds' section defines how to compile your application.
+builds:
+  -
+    # The ID for this build configuration.
+    id: "e6tea1"
+    # The path to your main Go file.
+    main: ./main.go
+    # The name of the output binary.
+    binary: e6tea1
+    # Common ldflags to reduce binary size.
+    # -s: Omit the symbol table and debug information.
+    # -w: Omit the DWARF debugging information.
+    ldflags:
+      - -s -w
+    # A list of Operating Systems (goos) and Architectures (goarch) to build for.
+    # This will create binaries for:
+    # - Linux (x86_64 and ARM64)
+    # - Windows (x86_64 and ARM64)
+    # - macOS (x86_64/Intel and ARM64/Apple Silicon)
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+
+# The 'archives' section defines how to package the binaries.
+# GoReleaser will create .tar.gz files for Linux/macOS and .zip files for Windows.
+archives:
+  -
+    # You can customize the name of the archive files using Go template variables.
+    name_template: "{{.ProjectName}}_{{.Os}}_{{.Arch}}"
+    files:
+      - README.md
+      - LICENSE
+
+# The 'checksum' section creates a file with SHA256 checksums for all artifacts,
+# which allows users to verify their downloads.
+checksum:
+  name_template: 'checksums.txt'
+
+# The 'snapshot' section configures what happens on non-tag commits.
+# We'll name builds from the main branch as 'SNAPSHOT' for development testing.
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+
